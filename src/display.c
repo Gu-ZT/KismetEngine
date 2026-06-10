@@ -251,7 +251,7 @@ esp_lcd_panel_handle_t display_init(void)
     esp_lcd_panel_io_spi_config_t io_config = ST77916_PANEL_IO_SPI_CONFIG(
         PIN_LCD_CS, PIN_LCD_DATA1, NULL, NULL
     );
-    io_config.pclk_hz = 10 * 1000 * 1000;
+    io_config.pclk_hz = 30 * 1000 * 1000;
     io_config.spi_mode = 0;
 
     esp_lcd_panel_io_handle_t io_handle = NULL;
@@ -268,7 +268,7 @@ esp_lcd_panel_handle_t display_init(void)
     };
     const esp_lcd_panel_dev_config_t panel_config = {
         .reset_gpio_num = PIN_LCD_RST,
-        .rgb_ele_order = LCD_RGB_ELEMENT_ORDER_RGB,
+        .rgb_ele_order = LCD_RGB_ELEMENT_ORDER_BGR,  // R/B 交换 (红显蓝→需BGR)
         .bits_per_pixel = LCD_BITS_PER_PIXEL,
         .vendor_config = (void *)&vendor_config,
     };
@@ -280,6 +280,7 @@ esp_lcd_panel_handle_t display_init(void)
     esp_lcd_panel_reset(panel);
     esp_lcd_panel_init(panel);
     esp_lcd_panel_disp_on_off(panel, true);
+
     ESP_LOGI(TAG, "Display ON (W180 init)");
 
     return panel;
