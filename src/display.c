@@ -216,7 +216,7 @@ static const st77916_lcd_init_cmd_t w180_init_cmds[] = {
 static bool spi_bus_init(void)
 {
     const spi_bus_config_t buscfg = ST77916_PANEL_BUS_SPI_CONFIG(
-        PIN_LCD_SCLK, PIN_LCD_MOSI,
+        PIN_LCD_SCLK, PIN_LCD_DATA0,  // DATA0 作为 MOSI
         LCD_H_RES * 80 * sizeof(uint16_t)
     );
     esp_err_t ret = spi_bus_initialize(LCD_SPI_HOST, &buscfg, SPI_DMA_CH_AUTO);
@@ -247,9 +247,9 @@ esp_lcd_panel_handle_t display_init(void)
     // 3. SPI 总线
     if (!spi_bus_init()) return NULL;
 
-    // 4. Panel IO
+    // 4. Panel IO (SPI: DC=DATA1)
     esp_lcd_panel_io_spi_config_t io_config = ST77916_PANEL_IO_SPI_CONFIG(
-        PIN_LCD_CS, PIN_LCD_DC, NULL, NULL
+        PIN_LCD_CS, PIN_LCD_DATA1, NULL, NULL
     );
     io_config.pclk_hz = 10 * 1000 * 1000;
     io_config.spi_mode = 0;
@@ -257,8 +257,9 @@ esp_lcd_panel_handle_t display_init(void)
     esp_lcd_panel_io_handle_t io_handle = NULL;
     ret = esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)LCD_SPI_HOST, &io_config, &io_handle);
     if (ret != ESP_OK) { ESP_LOGE(TAG, "IO failed"); return NULL; }
+    ESP_LOGI(TAG, "Panel IO created (SPI mode)");
 
-    // 5. Panel - 使用厂家专用初始化序列
+    // 5. Panel - SPI模式 + W180厂家初始化序列
     esp_lcd_panel_handle_t panel = NULL;
     const st77916_vendor_config_t vendor_config = {
         .init_cmds = w180_init_cmds,
@@ -285,18 +286,18 @@ esp_lcd_panel_handle_t display_init(void)
 }
 
 // ============================================================
-// 标准行扫描绘制 (正确的 init 应该修复了方向)
+// 列扫描绘制 (窄CASET → 无纵向拖影)
 // ============================================================
 void display_fill(esp_lcd_panel_handle_t panel, uint16_t color)
 {
     if (!panel) return;
-    uint16_t *line = malloc(LCD_H_RES * sizeof(uint16_t));
-    if (!line) return;
-    for (int i = 0; i < LCD_H_RES; i++) line[i] = color;
-    for (int y = 0; y < LCD_V_RES; y++) {
-        esp_lcd_panel_draw_bitmap(panel, 0, y, LCD_H_RES, y + 1, line);
+    uint16_t *col = malloc(LCD_V_RES * sizeof(uint16_t));
+    if (!col) return;
+    for (int i = 0; i < LCD_V_RES; i++) col[i] = color;
+    for (int x = 0; x < LCD_H_RES; x++) {
+        esp_lcd_panel_draw_bitmap(panel, x, 0, x + 1, LCD_V_RES, col);
     }
-    free(line);
+    free(col);
 }
 
 void display_fill_rect(esp_lcd_panel_handle_t panel,
@@ -310,13 +311,13 @@ void display_fill_rect(esp_lcd_panel_handle_t panel,
     if (y + h > LCD_V_RES) h = LCD_V_RES - y;
     if (w == 0 || h == 0) return;
 
-    uint16_t *line = malloc(w * sizeof(uint16_t));
-    if (!line) return;
-    for (int i = 0; i < w; i++) line[i] = color;
-    for (int row = 0; row < h; row++) {
-        esp_lcd_panel_draw_bitmap(panel, x, y + row, x + w, y + row + 1, line);
+    uint16_t *col = malloc(h * sizeof(uint16_t));
+    if (!col) return;
+    for (int i = 0; i < h; i++) col[i] = color;
+    for (int col_x = x; col_x < x + w; col_x++) {
+        esp_lcd_panel_draw_bitmap(panel, col_x, y, col_x + 1, y + h, col);
     }
-    free(line);
+    free(col);
 }
 
 void display_backlight_set(int brightness_percent)

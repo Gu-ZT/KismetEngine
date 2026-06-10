@@ -29,15 +29,13 @@ extern "C" {
 // IN1 (触摸中断)    →  暂不接           触摸中断
 // ============================================================
 #define PIN_LCD_SCLK   12   // → PCLK/SCK
-#define PIN_LCD_MOSI   11   // → DATA0/MOSI
-#define PIN_LCD_DC     10   // → DATA1/DC
+#define PIN_LCD_DATA0  11   // → DATA0/MOSI (SPI MOSI)
+#define PIN_LCD_DATA1  10   // → DATA1/DC   (SPI DC)
+#define PIN_LCD_DATA2  9    // → 不接 (SPI 模式下 NC)
+#define PIN_LCD_DATA3  8    // → 不接 (SPI 模式下 NC)
 #define PIN_LCD_CS     13   // → CS
 #define PIN_LCD_RST    14   // → RST/RES
 #define PIN_LCD_BL     15   // → BLC (背光)
-
-// QSPI 额外数据线 (当前使用 SPI 模式，暂不接)
-#define PIN_LCD_DATA2  9    // → DATA2/NC (QSPI only)
-#define PIN_LCD_DATA3  8    // → DATA3/NC (QSPI only)
 
 // 触摸 (预留, 暂未初始化)
 #define PIN_TOUCH_SCL  6    // → SCL
