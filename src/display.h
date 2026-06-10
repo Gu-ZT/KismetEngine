@@ -31,8 +31,8 @@ extern "C" {
 #define PIN_LCD_SCLK   12   // → PCLK/SCK
 #define PIN_LCD_DATA0  11   // → DATA0/MOSI (SPI MOSI)
 #define PIN_LCD_DATA1  10   // → DATA1/DC   (SPI DC)
-#define PIN_LCD_DATA2  9    // → 不接 (SPI 模式下 NC)
-#define PIN_LCD_DATA3  8    // → 不接 (SPI 模式下 NC)
+#define PIN_LCD_DATA2  9    // → 不接 (SPI 模式 NC)
+#define PIN_LCD_DATA3  8    // → 不接 (SPI 模式 NC)
 #define PIN_LCD_CS     13   // → CS
 #define PIN_LCD_RST    14   // → RST/RES
 #define PIN_LCD_BL     15   // → BLC (背光)

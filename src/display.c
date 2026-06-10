@@ -216,7 +216,7 @@ static const st77916_lcd_init_cmd_t w180_init_cmds[] = {
 static bool spi_bus_init(void)
 {
     const spi_bus_config_t buscfg = ST77916_PANEL_BUS_SPI_CONFIG(
-        PIN_LCD_SCLK, PIN_LCD_DATA0,  // DATA0 作为 MOSI
+        PIN_LCD_SCLK, PIN_LCD_DATA0,
         LCD_H_RES * 80 * sizeof(uint16_t)
     );
     esp_err_t ret = spi_bus_initialize(LCD_SPI_HOST, &buscfg, SPI_DMA_CH_AUTO);
