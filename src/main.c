@@ -3,7 +3,6 @@
 #include <math.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "driver/gpio.h"
 #include "display.h"
 
 // 列扫描填充圆 (窄CASET,无拖影)
@@ -40,10 +39,6 @@ static void draw_ring(esp_lcd_panel_handle_t panel,
 void app_main(void)
 {
     printf("\n=== ST77916 Rings Test (W180 Init) ===\n");
-
-    gpio_config_t bl = {.mode = GPIO_MODE_OUTPUT, .pin_bit_mask = 1ULL << PIN_LCD_BL};
-    gpio_config(&bl);
-    gpio_set_level(PIN_LCD_BL, 0);
 
     esp_lcd_panel_handle_t panel = display_init();
     if (!panel) { printf("FAIL\n"); return; }

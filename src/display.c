@@ -208,9 +208,9 @@ static const st77916_lcd_init_cmd_t w180_init_cmds[] = {
     {0xF3, (uint8_t[]){0x01}, 1, 0},
     {0xF0, (uint8_t[]){0x00}, 1, 0},
     {0x3A, (uint8_t[]){0x55}, 1, 0},     // COLMOD: RGB565
-    {0x21, (uint8_t[]){0x00}, 1, 0},     // INVON
-    {0x11, (uint8_t[]){0x00}, 1, 120},   // SLPOUT + 120ms
-    {0x29, (uint8_t[]){0x00}, 1, 0},     // DISPON
+    {0x21, (uint8_t[]){0x00}, 0, 0},     // INVON (无参数, 匹配厂家原始序列)
+    {0x11, (uint8_t[]){0x00}, 0, 120},   // SLPOUT + 120ms (无参数)
+    {0x29, (uint8_t[]){0x00}, 0, 0},     // DISPON (无参数)
 };
 
 static bool spi_bus_init(void)
@@ -236,18 +236,10 @@ esp_lcd_panel_handle_t display_init(void)
     gpio_config(&bk);
     gpio_set_level(PIN_LCD_BL, 0);
 
-    // 2. 硬件复位
-    gpio_config_t rst = {.mode = GPIO_MODE_OUTPUT, .pin_bit_mask = 1ULL << PIN_LCD_RST};
-    gpio_config(&rst);
-    gpio_set_level(PIN_LCD_RST, 0);
-    vTaskDelay(pdMS_TO_TICKS(20));
-    gpio_set_level(PIN_LCD_RST, 1);
-    vTaskDelay(pdMS_TO_TICKS(150));
-
-    // 3. SPI 总线
+    // 2. SPI 总线 (硬件复位由 esp_lcd_panel_reset 统一处理)
     if (!spi_bus_init()) return NULL;
 
-    // 4. Panel IO (SPI: DC=DATA1)
+    // 3. Panel IO (SPI: DC=DATA1)
     esp_lcd_panel_io_spi_config_t io_config = ST77916_PANEL_IO_SPI_CONFIG(
         PIN_LCD_CS, PIN_LCD_DATA1, NULL, NULL
     );
@@ -259,7 +251,7 @@ esp_lcd_panel_handle_t display_init(void)
     if (ret != ESP_OK) { ESP_LOGE(TAG, "IO failed"); return NULL; }
     ESP_LOGI(TAG, "Panel IO created (SPI mode)");
 
-    // 5. Panel - SPI模式 + W180厂家初始化序列
+    // 4. Panel - SPI模式 + W180厂家初始化序列
     esp_lcd_panel_handle_t panel = NULL;
     const st77916_vendor_config_t vendor_config = {
         .init_cmds = w180_init_cmds,
@@ -276,7 +268,7 @@ esp_lcd_panel_handle_t display_init(void)
     ret = esp_lcd_new_panel_st77916(io_handle, &panel_config, &panel);
     if (ret != ESP_OK) { ESP_LOGE(TAG, "Panel failed"); return NULL; }
 
-    // 6. Init
+    // 5. Init
     esp_lcd_panel_reset(panel);
     esp_lcd_panel_init(panel);
     esp_lcd_panel_disp_on_off(panel, true);
