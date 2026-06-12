@@ -249,7 +249,7 @@ esp_lcd_panel_handle_t display_init(void) {
         NULL,
         NULL
     );
-    io_config.pclk_hz = 30 * 1000 * 1000;
+    io_config.pclk_hz = 40 * 1000 * 1000;
     io_config.spi_mode = 0;
 
     esp_lcd_panel_io_handle_t io_handle = NULL;
