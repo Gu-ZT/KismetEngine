@@ -208,9 +208,9 @@ static const st77916_lcd_init_cmd_t w180_init_cmds[] = {
     {0xF3, (uint8_t[]){0x01}, 1, 0},
     {0xF0, (uint8_t[]){0x00}, 1, 0},
     {0x3A, (uint8_t[]){0x55}, 1, 0},     // COLMOD: RGB565
-    {0x21, (uint8_t[]){0x00}, 0, 0},     // INVON (无参数, 匹配厂家原始序列)
-    {0x11, (uint8_t[]){0x00}, 0, 120},   // SLPOUT + 120ms (无参数)
-    {0x29, (uint8_t[]){0x00}, 0, 0},     // DISPON (无参数)
+    {0x21, (uint8_t[]){0x00}, 1, 0},     // INVON
+    {0x11, (uint8_t[]){0x00}, 1, 120},   // SLPOUT + 120ms
+    {0x29, (uint8_t[]){0x00}, 1, 0},     // DISPON
 };
 
 static bool spi_bus_init(void)
