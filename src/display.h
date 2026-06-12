@@ -16,31 +16,33 @@ extern "C" {
 // ------------------------------------------------------------------
 // VCC               →  3V3              电源
 // GND               →  GND              地
-// PCLK / SCK        →  IO12             SPI 时钟
-// DATA0 / MOSI      →  IO11             SPI MOSI (数据)
-// DATA1 / DC        →  IO10             SPI DC (命令/数据选择)
+// PCLK / SCK        →  IO21             SPI 时钟
+// DATA0 / MOSI      →  IO47             SPI MOSI (数据)
+// DATA1 / DC        →  IO40             SPI DC (命令/数据选择)
 // DATA2 / NC        →  不接             (QSPI 模式才用)
 // DATA3 / NC        →  不接             (QSPI 模式才用)
-// CS                →  IO13             片选
-// RST / RES         →  IO14             复位
-// BLC               →  IO15             背光控制
-// SCL (触摸)        →  暂不接           触摸 I2C 时钟
-// SDA (触摸)        →  暂不接           触摸 I2C 数据
-// IN1 (触摸中断)    →  暂不接           触摸中断
+// CS                →  IO41             片选
+// RST / RES         →  IO45             复位
+// BLC               →  IO42             背光控制
+// SCL (触摸)        →  IO12             触摸 I2C 时钟
+// SDA (触摸)        →  IO11             触摸 I2C 数据
+// RST (触摸复位)    →  IO13             触摸复位
+// INT (触摸中断)    →  IO14             触摸中断
 // ============================================================
-#define PIN_LCD_SCLK   12   // → PCLK/SCK
-#define PIN_LCD_DATA0  11   // → DATA0/MOSI (SPI MOSI)
-#define PIN_LCD_DATA1  10   // → DATA1/DC   (SPI DC)
-#define PIN_LCD_DATA2  9    // → 不接 (SPI 模式 NC)
-#define PIN_LCD_DATA3  8    // → 不接 (SPI 模式 NC)
-#define PIN_LCD_CS     13   // → CS
-#define PIN_LCD_RST    14   // → RST/RES
-#define PIN_LCD_BL     15   // → BLC (背光)
+#define PIN_LCD_SCLK   21   // → PCLK/SCK
+#define PIN_LCD_DATA0  47   // → DATA0/MOSI (SPI MOSI)
+#define PIN_LCD_DATA1  40   // → DATA1/DC   (SPI DC)
+#define PIN_LCD_DATA2  46   // → 不接 (SPI 模式 NC)
+#define PIN_LCD_DATA3  48   // → 不接 (SPI 模式 NC)
+#define PIN_LCD_CS     41   // → CS
+#define PIN_LCD_RST    45   // → RST/RES
+#define PIN_LCD_BL     42   // → BLC (背光)
 
-// 触摸 (预留, 暂未初始化)
-#define PIN_TOUCH_SCL  6    // → SCL
-#define PIN_TOUCH_SDA  5    // → SDA
-#define PIN_TOUCH_INT  7    // → IN1
+// 触摸
+#define PIN_TOUCH_SCL  12   // → SCL
+#define PIN_TOUCH_SDA  11   // → SDA
+#define PIN_TOUCH_RST  13   // → RST (触摸复位)
+#define PIN_TOUCH_INT  14   // → INT
 
 // ============================================================
 // 显示参数
