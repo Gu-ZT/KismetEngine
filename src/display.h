@@ -84,10 +84,14 @@ void display_fill(esp_lcd_panel_handle_t panel, uint16_t color);
 /**
  * @brief 填充矩形区域
  */
-void display_fill_rect(esp_lcd_panel_handle_t panel,
-                       uint16_t x, uint16_t y,
-                       uint16_t w, uint16_t h,
-                       uint16_t color);
+void display_fill_rect(
+    esp_lcd_panel_handle_t panel,
+    uint16_t x,
+    uint16_t y,
+    uint16_t w,
+    uint16_t h,
+    uint16_t color
+);
 
 /**
  * @brief 设置背光亮度 (0~100)

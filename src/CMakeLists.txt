@@ -4,9 +4,9 @@
 FILE(GLOB_RECURSE app_sources ${CMAKE_SOURCE_DIR}/src/*.*)
 
 idf_component_register(
-    SRCS ${app_sources}
-    INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
-    REQUIRES
+        SRCS ${app_sources}
+        INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include
+        REQUIRES
         esp_lcd
         esp_lcd_st77916
         esp_driver_spi

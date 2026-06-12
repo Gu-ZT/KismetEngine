@@ -6,15 +6,19 @@
 #include "display.h"
 
 // 列扫描填充圆 (窄CASET,无拖影)
-static void draw_filled_circle(esp_lcd_panel_handle_t panel,
-                               int cx, int cy, int r, uint16_t color)
-{
+static void draw_filled_circle(
+    esp_lcd_panel_handle_t panel,
+    int cx,
+    int cy,
+    int r,
+    uint16_t color
+) {
     if (!panel || r <= 0) return;
     int xs = cx - r, xe = cx + r;
     if (xs < 0) xs = 0;
     if (xe >= LCD_H_RES) xe = LCD_H_RES - 1;
     for (int x = xs; x <= xe; x++) {
-        int half_h = (int)sqrtf((float)(r * r - (x - cx) * (x - cx)));
+        int half_h = (int) sqrtf((float) (r * r - (x - cx) * (x - cx)));
         int ys = cy - half_h, ye = cy + half_h;
         if (ys < 0) ys = 0;
         if (ye >= LCD_V_RES) ye = LCD_V_RES - 1;
@@ -28,20 +32,27 @@ static void draw_filled_circle(esp_lcd_panel_handle_t panel,
     }
 }
 
-static void draw_ring(esp_lcd_panel_handle_t panel,
-                      int cx, int cy, int r, int thickness, uint16_t color)
-{
+static void draw_ring(
+    esp_lcd_panel_handle_t panel,
+    int cx,
+    int cy,
+    int r,
+    int thickness,
+    uint16_t color
+) {
     draw_filled_circle(panel, cx, cy, r, color);
     if (r > thickness)
         draw_filled_circle(panel, cx, cy, r - thickness, COLOR_BLACK);
 }
 
-void app_main(void)
-{
+void app_main(void) {
     printf("\n=== ST77916 Rings Test (W180 Init) ===\n");
 
     esp_lcd_panel_handle_t panel = display_init();
-    if (!panel) { printf("FAIL\n"); return; }
+    if (!panel) {
+        printf("FAIL\n");
+        return;
+    }
 
     int cx = 180, cy = 180;
 

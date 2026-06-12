@@ -207,16 +207,20 @@ static const st77916_lcd_init_cmd_t w180_init_cmds[] = {
     {0xD9, (uint8_t[]){0xAA}, 1, 0},
     {0xF3, (uint8_t[]){0x01}, 1, 0},
     {0xF0, (uint8_t[]){0x00}, 1, 0},
-    {0x3A, (uint8_t[]){0x55}, 1, 0},     // COLMOD: RGB565
-    {0x21, (uint8_t[]){0x00}, 1, 0},     // INVON
-    {0x11, (uint8_t[]){0x00}, 1, 120},   // SLPOUT + 120ms
-    {0x29, (uint8_t[]){0x00}, 1, 0},     // DISPON
+    {0x3A, (uint8_t[]){0x55}, 1, 0},
+    // COLMOD: RGB565
+    {0x21, (uint8_t[]){0x00}, 1, 0},
+    // INVON
+    {0x11, (uint8_t[]){0x00}, 1, 120},
+    // SLPOUT + 120ms
+    {0x29, (uint8_t[]){0x00}, 1, 0},
+    // DISPON
 };
 
-static bool spi_bus_init(void)
-{
+static bool spi_bus_init(void) {
     const spi_bus_config_t buscfg = ST77916_PANEL_BUS_SPI_CONFIG(
-        PIN_LCD_SCLK, PIN_LCD_DATA0,
+        PIN_LCD_SCLK,
+        PIN_LCD_DATA0,
         LCD_H_RES * 80 * sizeof(uint16_t)
     );
     esp_err_t ret = spi_bus_initialize(LCD_SPI_HOST, &buscfg, SPI_DMA_CH_AUTO);
@@ -227,8 +231,7 @@ static bool spi_bus_init(void)
     return true;
 }
 
-esp_lcd_panel_handle_t display_init(void)
-{
+esp_lcd_panel_handle_t display_init(void) {
     esp_err_t ret;
 
     // 1. 背光 (低电平有效)
@@ -241,14 +244,20 @@ esp_lcd_panel_handle_t display_init(void)
 
     // 3. Panel IO (SPI: DC=DATA1)
     esp_lcd_panel_io_spi_config_t io_config = ST77916_PANEL_IO_SPI_CONFIG(
-        PIN_LCD_CS, PIN_LCD_DATA1, NULL, NULL
+        PIN_LCD_CS,
+        PIN_LCD_DATA1,
+        NULL,
+        NULL
     );
     io_config.pclk_hz = 30 * 1000 * 1000;
     io_config.spi_mode = 0;
 
     esp_lcd_panel_io_handle_t io_handle = NULL;
-    ret = esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)LCD_SPI_HOST, &io_config, &io_handle);
-    if (ret != ESP_OK) { ESP_LOGE(TAG, "IO failed"); return NULL; }
+    ret = esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t) LCD_SPI_HOST, &io_config, &io_handle);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "IO failed");
+        return NULL;
+    }
     ESP_LOGI(TAG, "Panel IO created (SPI mode)");
 
     // 4. Panel - SPI模式 + W180厂家初始化序列
@@ -256,17 +265,21 @@ esp_lcd_panel_handle_t display_init(void)
     const st77916_vendor_config_t vendor_config = {
         .init_cmds = w180_init_cmds,
         .init_cmds_size = sizeof(w180_init_cmds) / sizeof(st77916_lcd_init_cmd_t),
-        .flags = { .use_qspi_interface = 0 },
+        .flags = {.use_qspi_interface = 0},
     };
     const esp_lcd_panel_dev_config_t panel_config = {
         .reset_gpio_num = PIN_LCD_RST,
-        .rgb_ele_order = LCD_RGB_ELEMENT_ORDER_BGR,  // R/B 交换 (红显蓝→需BGR)
+        .rgb_ele_order = LCD_RGB_ELEMENT_ORDER_BGR,
+        // R/B 交换 (红显蓝→需BGR)
         .bits_per_pixel = LCD_BITS_PER_PIXEL,
-        .vendor_config = (void *)&vendor_config,
+        .vendor_config = (void *) &vendor_config,
     };
 
     ret = esp_lcd_new_panel_st77916(io_handle, &panel_config, &panel);
-    if (ret != ESP_OK) { ESP_LOGE(TAG, "Panel failed"); return NULL; }
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Panel failed");
+        return NULL;
+    }
 
     // 5. Init
     esp_lcd_panel_reset(panel);
@@ -281,8 +294,7 @@ esp_lcd_panel_handle_t display_init(void)
 // ============================================================
 // 列扫描绘制 (窄CASET → 无纵向拖影)
 // ============================================================
-void display_fill(esp_lcd_panel_handle_t panel, uint16_t color)
-{
+void display_fill(esp_lcd_panel_handle_t panel, uint16_t color) {
     if (!panel) return;
     uint16_t *col = malloc(LCD_V_RES * sizeof(uint16_t));
     if (!col) return;
@@ -293,11 +305,14 @@ void display_fill(esp_lcd_panel_handle_t panel, uint16_t color)
     free(col);
 }
 
-void display_fill_rect(esp_lcd_panel_handle_t panel,
-                       uint16_t x, uint16_t y,
-                       uint16_t w, uint16_t h,
-                       uint16_t color)
-{
+void display_fill_rect(
+    esp_lcd_panel_handle_t panel,
+    uint16_t x,
+    uint16_t y,
+    uint16_t w,
+    uint16_t h,
+    uint16_t color
+) {
     if (!panel) return;
     if (x >= LCD_H_RES || y >= LCD_V_RES) return;
     if (x + w > LCD_H_RES) w = LCD_H_RES - x;
@@ -313,7 +328,6 @@ void display_fill_rect(esp_lcd_panel_handle_t panel,
     free(col);
 }
 
-void display_backlight_set(int brightness_percent)
-{
+void display_backlight_set(int brightness_percent) {
     gpio_set_level(PIN_LCD_BL, (brightness_percent <= 0) ? 1 : 0);
 }
